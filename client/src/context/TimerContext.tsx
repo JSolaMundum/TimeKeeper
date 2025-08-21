@@ -52,7 +52,7 @@ const initialState: TimerState = {
   isCompactMode: false,
   time: 0,
   timerHours: 0,
-  timerMinutes: 25,
+  timerMinutes: 1,
   timerSeconds: 0,
   pomodoroWork: 25,
   pomodoroBreak: 5,
@@ -67,7 +67,13 @@ const initialState: TimerState = {
 function timerReducer(state: TimerState, action: TimerAction): TimerState {
   switch (action.type) {
     case 'SET_MODE':
-      return { ...state, mode: action.payload, isRunning: false };
+      let newTime = 0;
+      if (action.payload === 'timer') {
+        newTime = state.timerHours * 3600 + state.timerMinutes * 60 + state.timerSeconds;
+      } else if (action.payload === 'pomodoro') {
+        newTime = state.currentSession === 'work' ? state.pomodoroWork * 60 : state.pomodoroBreak * 60;
+      }
+      return { ...state, mode: action.payload, isRunning: false, time: newTime };
     
     case 'TOGGLE_RUNNING':
       return { ...state, isRunning: !state.isRunning };

@@ -69,7 +69,7 @@ export function useNotifications() {
 
   // Monitor timer completion for notifications
   useEffect(() => {
-    if (state.time === 0 && !state.isRunning) {
+    if (state.time === 0 && state.mode !== 'stopwatch') {
       if (state.mode === 'timer') {
         showNotification('Timer Complete', 'Your timer has finished!');
       } else if (state.mode === 'pomodoro') {
@@ -79,7 +79,7 @@ export function useNotifications() {
         showNotification('Pomodoro Session Complete', message);
       }
     }
-  }, [state.time, state.isRunning, state.mode, state.currentSession, showNotification]);
+  }, [state.time, state.mode, state.currentSession, showNotification]);
 
   return {
     showNotification,

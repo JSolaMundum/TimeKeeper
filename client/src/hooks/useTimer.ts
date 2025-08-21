@@ -17,13 +17,15 @@ export function useTimer() {
 
   // Handle timer completion
   useEffect(() => {
-    if (state.time === 0 && state.mode !== 'stopwatch') {
+    if (state.time === 0 && state.mode !== 'stopwatch' && !state.isRunning) {
       if (state.mode === 'pomodoro') {
         // Auto-switch to next Pomodoro session
-        dispatch({ type: 'NEXT_POMODORO_SESSION' });
+        setTimeout(() => {
+          dispatch({ type: 'NEXT_POMODORO_SESSION' });
+        }, 100);
       }
     }
-  }, [state.time, state.mode, dispatch]);
+  }, [state.time, state.mode, state.isRunning, dispatch]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);

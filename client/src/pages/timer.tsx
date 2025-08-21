@@ -1,15 +1,23 @@
 import { useTimerContext } from '@/context/TimerContext';
 import { usePomodoro } from '@/hooks/usePomodoro';
+import { useTimer } from '@/hooks/useTimer';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useTheme } from '@/components/ThemeProvider';
 import { ModeSelector } from '@/components/timer/ModeSelector';
 import { TimerDisplay } from '@/components/timer/TimerDisplay';
 import { TimerControls } from '@/components/timer/TimerControls';
 import { NotificationSettings } from '@/components/timer/NotificationSettings';
 import { CompactView } from '@/components/timer/CompactView';
-import { Minimize2, Maximize2 } from 'lucide-react';
+import { Minimize2, Maximize2, Sun, Moon } from 'lucide-react';
 
 export default function TimerPage() {
   const { state, dispatch } = useTimerContext();
   const { getCurrentSessionInfo, getSessionProgress } = usePomodoro();
+  const { theme, toggleTheme } = useTheme();
+  
+  // Initialize timer and notifications hooks
+  useTimer();
+  useNotifications();
 
   const handleToggleCompactMode = () => {
     dispatch({ type: 'TOGGLE_COMPACT_MODE' });
@@ -58,17 +66,30 @@ export default function TimerPage() {
             <div className="w-3 h-3 bg-system-green rounded-full"></div>
           </div>
           <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">TimeKeeper</h1>
-          <button
-            data-testid="button-toggle-compact"
-            className="text-system-gray hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            onClick={handleToggleCompactMode}
-          >
-            {state.isCompactMode ? (
-              <Maximize2 className="w-4 h-4" />
-            ) : (
-              <Minimize2 className="w-4 h-4" />
-            )}
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              data-testid="button-toggle-theme"
+              className="text-system-gray hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+            <button
+              data-testid="button-toggle-compact"
+              className="text-system-gray hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              onClick={handleToggleCompactMode}
+            >
+              {state.isCompactMode ? (
+                <Maximize2 className="w-4 h-4" />
+              ) : (
+                <Minimize2 className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
