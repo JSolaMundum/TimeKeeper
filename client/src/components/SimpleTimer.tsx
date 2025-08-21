@@ -17,6 +17,9 @@ export function SimpleTimer() {
     if (timer.mode === 'timer' && timer.currentTime === 0) {
       const totalSeconds = hours * 3600 + minutes * 60 + seconds;
       timer.setTimer(totalSeconds);
+    } else if (timer.mode === 'pomodoro' && timer.currentTime === 0) {
+      const sessionTime = timer.pomodoroSession === 'work' ? timer.workDuration * 60 : timer.breakDuration * 60;
+      timer.setTimer(sessionTime);
     }
     timer.start();
   };
@@ -52,7 +55,7 @@ export function SimpleTimer() {
           </div>
         </div>
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)}
+          {timer.mode === 'pomodoro' ? `${timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)} - ${timer.pomodoroSession}` : timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)}
         </div>
       </div>
     );
@@ -114,7 +117,7 @@ export function SimpleTimer() {
               {timer.formatTime(timer.currentTime)}
             </div>
             <div className="text-sm text-gray-500 font-medium uppercase tracking-wide">
-              {timer.mode} Mode
+              {timer.mode === 'pomodoro' ? `${timer.mode} - ${timer.pomodoroSession}` : `${timer.mode} Mode`}
             </div>
           </div>
         </div>
@@ -156,6 +159,51 @@ export function SimpleTimer() {
                   onChange={(e) => setSecondsInput(parseInt(e.target.value) || 0)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pomodoro Settings */}
+        {timer.mode === 'pomodoro' && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Pomodoro Settings</h3>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="text-center">
+                <label className="block text-xs font-medium text-gray-500 mb-2">WORK (MINUTES)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="60"
+                  value={timer.workDuration}
+                  onChange={(e) => timer.setPomodoroSettings(parseInt(e.target.value) || 25, timer.breakDuration)}
+                  className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+              <div className="text-center">
+                <label className="block text-xs font-medium text-gray-500 mb-2">BREAK (MINUTES)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="30"
+                  value={timer.breakDuration}
+                  onChange={(e) => timer.setPomodoroSettings(timer.workDuration, parseInt(e.target.value) || 5)}
+                  className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-300">Current Session:</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400 capitalize">
+                  {timer.pomodoroSession}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm mt-1">
+                <span className="text-gray-600 dark:text-gray-300">Completed Sessions:</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  {timer.completedSessions}
+                </span>
               </div>
             </div>
           </div>

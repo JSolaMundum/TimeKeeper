@@ -5,6 +5,11 @@ export interface TimerState {
   isRunning: boolean;
   currentTime: number; // in seconds
   initialTime: number; // for reset functionality
+  // Pomodoro specific
+  pomodoroSession: 'work' | 'break';
+  workDuration: number; // in minutes
+  breakDuration: number; // in minutes
+  completedSessions: number;
 }
 
 export function useSimpleTimer() {
@@ -12,7 +17,11 @@ export function useSimpleTimer() {
     mode: 'timer',
     isRunning: false,
     currentTime: 0,
-    initialTime: 0
+    initialTime: 0,
+    pomodoroSession: 'work',
+    workDuration: 25,
+    breakDuration: 5,
+    completedSessions: 0
   });
   
   const intervalRef = useRef<number | null>(null);
@@ -36,10 +45,40 @@ export function useSimpleTimer() {
         } else {
           // Timer or Pomodoro countdown
           if (prev.currentTime <= 0) {
+            // Handle Pomodoro session completion
+            if (prev.mode === 'pomodoro') {
+              const nextSession = prev.pomodoroSession === 'work' ? 'break' : 'work';
+              const nextDuration = nextSession === 'work' ? prev.workDuration : prev.breakDuration;
+              const newCompletedSessions = prev.pomodoroSession === 'work' ? prev.completedSessions + 1 : prev.completedSessions;
+              
+              return {
+                ...prev,
+                pomodoroSession: nextSession,
+                currentTime: nextDuration * 60,
+                initialTime: nextDuration * 60,
+                completedSessions: newCompletedSessions,
+                isRunning: false
+              };
+            }
             return { ...prev, isRunning: false };
           }
           const newTime = prev.currentTime - 1;
           if (newTime <= 0) {
+            // Handle completion
+            if (prev.mode === 'pomodoro') {
+              const nextSession = prev.pomodoroSession === 'work' ? 'break' : 'work';
+              const nextDuration = nextSession === 'work' ? prev.workDuration : prev.breakDuration;
+              const newCompletedSessions = prev.pomodoroSession === 'work' ? prev.completedSessions + 1 : prev.completedSessions;
+              
+              return {
+                ...prev,
+                pomodoroSession: nextSession,
+                currentTime: nextDuration * 60,
+                initialTime: nextDuration * 60,
+                completedSessions: newCompletedSessions,
+                isRunning: false
+              };
+            }
             return { ...prev, currentTime: 0, isRunning: false };
           }
           return { ...prev, currentTime: newTime };
@@ -81,11 +120,40 @@ export function useSimpleTimer() {
   };
 
   const setMode = (mode: 'timer' | 'stopwatch' | 'pomodoro') => {
+    setState(prev => {
+      let newTime = 0;
+      let newInitialTime = 0;
+      
+      if (mode === 'stopwatch') {
+        newTime = 0;
+        newInitialTime = 0;
+      } else if (mode === 'pomodoro') {
+        newTime = prev.workDuration * 60;
+        newInitialTime = prev.workDuration * 60;
+      } else {
+        newTime = prev.initialTime;
+        newInitialTime = prev.initialTime;
+      }
+      
+      return {
+        ...prev,
+        mode,
+        currentTime: newTime,
+        initialTime: newInitialTime,
+        isRunning: false,
+        pomodoroSession: 'work',
+        completedSessions: 0
+      };
+    });
+  };
+
+  const setPomodoroSettings = (workMinutes: number, breakMinutes: number) => {
     setState(prev => ({
       ...prev,
-      mode,
-      currentTime: mode === 'stopwatch' ? 0 : prev.initialTime,
-      isRunning: false
+      workDuration: workMinutes,
+      breakDuration: breakMinutes,
+      currentTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.currentTime,
+      initialTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.initialTime
     }));
   };
 
@@ -107,6 +175,7 @@ export function useSimpleTimer() {
     pause,
     reset,
     setMode,
+    setPomodoroSettings,
     formatTime
   };
 }
