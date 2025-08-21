@@ -4,7 +4,7 @@ import { useTimerContext } from '@/context/TimerContext';
 export function useTimer() {
   const { state, dispatch } = useTimerContext();
 
-  // Timer tick effect
+  // Simple timer effect
   useEffect(() => {
     if (!state.isRunning) return;
 
@@ -13,16 +13,15 @@ export function useTimer() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [state.isRunning]);
+  }, [state.isRunning, dispatch]);
 
   // Handle timer completion
   useEffect(() => {
     if (state.time === 0 && state.mode !== 'stopwatch' && !state.isRunning) {
       if (state.mode === 'pomodoro') {
-        // Auto-switch to next Pomodoro session
         setTimeout(() => {
           dispatch({ type: 'NEXT_POMODORO_SESSION' });
-        }, 100);
+        }, 500);
       }
     }
   }, [state.time, state.mode, state.isRunning, dispatch]);
