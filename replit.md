@@ -4,11 +4,15 @@
 A minimizable web-based timer and stopwatch tool with Pomodoro functionality. Users can minimize it to a corner widget showing time counting down or up. Includes adaptive Pomodoro sessions for extended work periods.
 
 ## Features
-- Timer (countdown)
+- Timer (countdown with hours/minutes/seconds input)
 - Stopwatch (count up)
-- Pomodoro sessions with adaptive intervals
+- Pomodoro sessions with adaptive intervals for extended work blocks
+- Target hours setting (1-12 hours) with automatic session calculation
+- Progress tracking with visual progress bar
+- Auto-switching between work and break sessions
 - Minimizable corner widget view
-- Clean, simple interface
+- Dark mode toggle
+- Clean, simple interface with macOS-style design
 
 ## User Preferences
 - Focus on simplicity and usability
@@ -23,4 +27,7 @@ A minimizable web-based timer and stopwatch tool with Pomodoro functionality. Us
 
 ## Recent Changes
 - Initial project setup (Aug 21, 2025)
-- Planning timer, stopwatch, and Pomodoro functionality
+- Fixed critical timer countdown issues - rebuilt with reliable 1-second intervals (Aug 21, 2025)
+- Added complete Pomodoro functionality with adaptive sessions for extended work blocks (Aug 21, 2025)
+- Implemented dark mode toggle and compact view for minimizable corner widget (Aug 21, 2025)
+- Added target hours setting for 3-4 hour productivity sessions with progress tracking (Aug 21, 2025)

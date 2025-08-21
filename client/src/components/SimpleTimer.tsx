@@ -168,6 +168,24 @@ export function SimpleTimer() {
         {timer.mode === 'pomodoro' && (
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Pomodoro Settings</h3>
+            
+            {/* Target Hours */}
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-500 mb-2">TARGET WORK HOURS</label>
+              <input
+                type="number"
+                min="1"
+                max="12"
+                step="0.5"
+                value={timer.targetHours}
+                onChange={(e) => timer.setTargetHours(parseFloat(e.target.value) || 4)}
+                className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+              <p className="text-xs text-gray-500 mt-1 text-center">
+                This will adapt your work session for extended productivity blocks
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="text-center">
                 <label className="block text-xs font-medium text-gray-500 mb-2">WORK (MINUTES)</label>
@@ -192,19 +210,35 @@ export function SimpleTimer() {
                 />
               </div>
             </div>
+            
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 dark:text-gray-300">Target:</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  {timer.targetHours} hours of focused work
+                </span>
+              </div>
+              <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-600 dark:text-gray-300">Current Session:</span>
                 <span className="font-semibold text-blue-600 dark:text-blue-400 capitalize">
                   {timer.pomodoroSession}
                 </span>
               </div>
-              <div className="flex justify-between text-sm mt-1">
-                <span className="text-gray-600 dark:text-gray-300">Completed Sessions:</span>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-600 dark:text-gray-300">Progress:</span>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
-                  {timer.completedSessions}
+                  {timer.completedSessions} / {timer.totalSessions} sessions
                 </span>
               </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(timer.completedSessions / timer.totalSessions) * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                {timer.totalSessions - timer.completedSessions} sessions remaining to reach your {timer.targetHours}h goal
+              </p>
             </div>
           </div>
         )}

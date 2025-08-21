@@ -10,6 +10,8 @@ export interface TimerState {
   workDuration: number; // in minutes
   breakDuration: number; // in minutes
   completedSessions: number;
+  targetHours: number; // target work hours
+  totalSessions: number; // calculated total sessions needed
 }
 
 export function useSimpleTimer() {
@@ -21,7 +23,9 @@ export function useSimpleTimer() {
     pomodoroSession: 'work',
     workDuration: 25,
     breakDuration: 5,
-    completedSessions: 0
+    completedSessions: 0,
+    targetHours: 4,
+    totalSessions: 16 // 4 hours = 240 min, 240/25 = 9.6 work sessions, rounded up to 10, plus 9 breaks = 19 total, but we'll calculate this properly
   });
   
   const intervalRef = useRef<number | null>(null);
@@ -142,19 +146,39 @@ export function useSimpleTimer() {
         initialTime: newInitialTime,
         isRunning: false,
         pomodoroSession: 'work',
-        completedSessions: 0
+        completedSessions: 0,
+        totalSessions: mode === 'pomodoro' ? Math.ceil((prev.targetHours * 60) / prev.workDuration) * 2 - 1 : prev.totalSessions
       };
     });
   };
 
   const setPomodoroSettings = (workMinutes: number, breakMinutes: number) => {
-    setState(prev => ({
-      ...prev,
-      workDuration: workMinutes,
-      breakDuration: breakMinutes,
-      currentTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.currentTime,
-      initialTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.initialTime
-    }));
+    setState(prev => {
+      const workSessionsNeeded = Math.ceil((prev.targetHours * 60) / workMinutes);
+      const totalSessions = workSessionsNeeded + (workSessionsNeeded - 1); // work sessions + break sessions (one less break)
+      
+      return {
+        ...prev,
+        workDuration: workMinutes,
+        breakDuration: breakMinutes,
+        totalSessions,
+        currentTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.currentTime,
+        initialTime: prev.mode === 'pomodoro' ? workMinutes * 60 : prev.initialTime
+      };
+    });
+  };
+
+  const setTargetHours = (hours: number) => {
+    setState(prev => {
+      const workSessionsNeeded = Math.ceil((hours * 60) / prev.workDuration);
+      const totalSessions = workSessionsNeeded + (workSessionsNeeded - 1); // work sessions + break sessions
+      
+      return {
+        ...prev,
+        targetHours: hours,
+        totalSessions
+      };
+    });
   };
 
   const formatTime = (seconds: number): string => {
@@ -176,6 +200,7 @@ export function useSimpleTimer() {
     reset,
     setMode,
     setPomodoroSettings,
+    setTargetHours,
     formatTime
   };
 }
