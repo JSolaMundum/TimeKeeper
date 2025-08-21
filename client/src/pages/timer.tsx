@@ -16,7 +16,7 @@ export default function TimerPage() {
   const { theme, toggleTheme } = useTheme();
   
   // Initialize timer and notifications hooks
-  useTimer();
+  const timer = useTimer();
   useNotifications();
 
   const handleToggleCompactMode = () => {

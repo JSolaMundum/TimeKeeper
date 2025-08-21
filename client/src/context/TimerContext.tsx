@@ -96,10 +96,13 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
       if (state.mode === 'stopwatch') {
         return { ...state, time: state.time + 1 };
       } else {
-        const newTime = Math.max(0, state.time - 1);
-        if (newTime === 0 && state.time > 0) {
-          // Timer finished
-          return { ...state, time: newTime, isRunning: false };
+        // Timer or Pomodoro countdown
+        if (state.time <= 0) return state;
+        
+        const newTime = state.time - 1;
+        if (newTime === 0) {
+          // Timer finished - stop running
+          return { ...state, time: 0, isRunning: false };
         }
         return { ...state, time: newTime };
       }

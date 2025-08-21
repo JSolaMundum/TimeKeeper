@@ -13,7 +13,7 @@ export function useTimer() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [state.isRunning, dispatch]);
+  }, [state.isRunning]);
 
   // Handle timer completion
   useEffect(() => {
