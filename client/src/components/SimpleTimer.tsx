@@ -237,7 +237,7 @@ export function SimpleTimer() {
                 ></div>
               </div>
               <p className="text-xs text-gray-500 mt-2 text-center">
-                {timer.totalSessions - timer.completedSessions} sessions remaining to reach your {timer.targetHours}h goal
+                {timer.totalSessions - timer.completedSessions} sessions (work+break cycles) remaining to reach your {timer.targetHours}h goal
               </p>
             </div>
           </div>

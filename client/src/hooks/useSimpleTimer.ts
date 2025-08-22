@@ -25,7 +25,7 @@ export function useSimpleTimer() {
     breakDuration: 5,
     completedSessions: 0,
     targetHours: 4,
-    totalSessions: 16 // 4 hours = 240 min, 240/25 = 9.6 work sessions, rounded up to 10, plus 9 breaks = 19 total, but we'll calculate this properly
+    totalSessions: 10 // 4 hours = 240 min, 240/25 = 9.6, rounded up to 10 sessions (work+break cycles)
   });
   
   const intervalRef = useRef<number | null>(null);
@@ -53,7 +53,7 @@ export function useSimpleTimer() {
             if (prev.mode === 'pomodoro') {
               const nextSession = prev.pomodoroSession === 'work' ? 'break' : 'work';
               const nextDuration = nextSession === 'work' ? prev.workDuration : prev.breakDuration;
-              const newCompletedSessions = prev.pomodoroSession === 'work' ? prev.completedSessions + 1 : prev.completedSessions;
+              const newCompletedSessions = prev.pomodoroSession === 'break' ? prev.completedSessions + 1 : prev.completedSessions; // Complete session after break
               
               return {
                 ...prev,
@@ -72,7 +72,7 @@ export function useSimpleTimer() {
             if (prev.mode === 'pomodoro') {
               const nextSession = prev.pomodoroSession === 'work' ? 'break' : 'work';
               const nextDuration = nextSession === 'work' ? prev.workDuration : prev.breakDuration;
-              const newCompletedSessions = prev.pomodoroSession === 'work' ? prev.completedSessions + 1 : prev.completedSessions;
+              const newCompletedSessions = prev.pomodoroSession === 'break' ? prev.completedSessions + 1 : prev.completedSessions; // Complete session after break
               
               return {
                 ...prev,
@@ -147,15 +147,14 @@ export function useSimpleTimer() {
         isRunning: false,
         pomodoroSession: 'work',
         completedSessions: 0,
-        totalSessions: mode === 'pomodoro' ? Math.ceil((prev.targetHours * 60) / prev.workDuration) * 2 - 1 : prev.totalSessions
+        totalSessions: mode === 'pomodoro' ? Math.ceil((prev.targetHours * 60) / prev.workDuration) : prev.totalSessions
       };
     });
   };
 
   const setPomodoroSettings = (workMinutes: number, breakMinutes: number) => {
     setState(prev => {
-      const workSessionsNeeded = Math.ceil((prev.targetHours * 60) / workMinutes);
-      const totalSessions = workSessionsNeeded + (workSessionsNeeded - 1); // work sessions + break sessions (one less break)
+      const totalSessions = Math.ceil((prev.targetHours * 60) / workMinutes); // Each session = work + break
       
       return {
         ...prev,
@@ -170,8 +169,7 @@ export function useSimpleTimer() {
 
   const setTargetHours = (hours: number) => {
     setState(prev => {
-      const workSessionsNeeded = Math.ceil((hours * 60) / prev.workDuration);
-      const totalSessions = workSessionsNeeded + (workSessionsNeeded - 1); // work sessions + break sessions
+      const totalSessions = Math.ceil((hours * 60) / prev.workDuration); // Each session = work + break
       
       return {
         ...prev,
