@@ -210,16 +210,16 @@ export function SimpleTimer() {
               <label className="block text-xs font-medium text-gray-500 mb-2">TARGET WORK HOURS</label>
               <input
                 type="number"
-                min="1"
+                min="0.5"
                 max="12"
                 step="0.5"
                 value={timer.targetHours}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === '' || val === '-') {
-                    timer.setTargetHours(1);
+                    timer.setTargetHours(0.5);
                   } else {
-                    timer.setTargetHours(parseFloat(val) || 1);
+                    timer.setTargetHours(parseFloat(val) || 0.5);
                   }
                 }}
                 onKeyDown={(e) => {
@@ -228,7 +228,7 @@ export function SimpleTimer() {
                     timer.setTargetHours(Math.min(timer.targetHours + 0.5, 12));
                   } else if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    timer.setTargetHours(Math.max(timer.targetHours - 0.5, 1));
+                    timer.setTargetHours(Math.max(timer.targetHours - 0.5, 0.5));
                   }
                 }}
                 className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"

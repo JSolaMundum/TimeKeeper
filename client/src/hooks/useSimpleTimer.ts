@@ -24,8 +24,8 @@ export function useSimpleTimer() {
     workDuration: 25,
     breakDuration: 5,
     completedSessions: 0,
-    targetHours: 4,
-    totalSessions: 10 // 4 hours = 240 min, 240/25 = 9.6, rounded up to 10 sessions (work+break cycles)
+    targetHours: 1,
+    totalSessions: 3 // 1 hour = 60 min, 60/25 = 2.4, rounded up to 3 sessions (work+break cycles)
   });
   
   const intervalRef = useRef<number | null>(null);
