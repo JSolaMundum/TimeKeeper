@@ -32,6 +32,16 @@ export function SimpleTimer() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, currentValue: number, setValue: (value: number) => void, min: number = 0, max: number = 99) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setValue(Math.min(currentValue + 1, max));
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setValue(Math.max(currentValue - 1, min));
+    }
+  };
+
   if (isCompact) {
     return (
       <div className="fixed top-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-50">
@@ -135,6 +145,7 @@ export function SimpleTimer() {
                   max="23"
                   value={hours}
                   onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                  onKeyDown={(e) => handleKeyDown(e, hours, setHours, 0, 23)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
@@ -146,6 +157,7 @@ export function SimpleTimer() {
                   max="59"
                   value={minutes}
                   onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                  onKeyDown={(e) => handleKeyDown(e, minutes, setMinutes, 0, 59)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
@@ -157,6 +169,7 @@ export function SimpleTimer() {
                   max="59"
                   value={seconds}
                   onChange={(e) => setSecondsInput(parseInt(e.target.value) || 0)}
+                  onKeyDown={(e) => handleKeyDown(e, seconds, setSecondsInput, 0, 59)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
@@ -179,6 +192,15 @@ export function SimpleTimer() {
                 step="0.5"
                 value={timer.targetHours}
                 onChange={(e) => timer.setTargetHours(parseFloat(e.target.value) || 4)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    timer.setTargetHours(Math.min(timer.targetHours + 0.5, 12));
+                  } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    timer.setTargetHours(Math.max(timer.targetHours - 0.5, 1));
+                  }
+                }}
                 className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
               />
               <p className="text-xs text-gray-500 mt-1 text-center">
@@ -195,6 +217,15 @@ export function SimpleTimer() {
                   max="60"
                   value={timer.workDuration}
                   onChange={(e) => timer.setPomodoroSettings(parseInt(e.target.value) || 25, timer.breakDuration)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      timer.setPomodoroSettings(Math.min(timer.workDuration + 1, 60), timer.breakDuration);
+                    } else if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      timer.setPomodoroSettings(Math.max(timer.workDuration - 1, 1), timer.breakDuration);
+                    }
+                  }}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
@@ -206,6 +237,15 @@ export function SimpleTimer() {
                   max="30"
                   value={timer.breakDuration}
                   onChange={(e) => timer.setPomodoroSettings(timer.workDuration, parseInt(e.target.value) || 5)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      timer.setPomodoroSettings(timer.workDuration, Math.min(timer.breakDuration + 1, 30));
+                    } else if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      timer.setPomodoroSettings(timer.workDuration, Math.max(timer.breakDuration - 1, 1));
+                    }
+                  }}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
