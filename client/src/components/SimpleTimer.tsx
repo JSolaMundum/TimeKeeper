@@ -33,6 +33,7 @@ export function SimpleTimer() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, currentValue: number, setValue: (value: number) => void, min: number = 0, max: number = 99) => {
+    // Only handle arrow keys, allow all other keys for normal editing
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       setValue(Math.min(currentValue + 1, max));
@@ -40,6 +41,7 @@ export function SimpleTimer() {
       e.preventDefault();
       setValue(Math.max(currentValue - 1, min));
     }
+    // Let all other keys (delete, backspace, numbers, etc.) pass through normally
   };
 
   if (isCompact) {
@@ -144,7 +146,14 @@ export function SimpleTimer() {
                   min="0"
                   max="23"
                   value={hours}
-                  onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || val === '-') {
+                      setHours(0);
+                    } else {
+                      setHours(parseInt(val) || 0);
+                    }
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, hours, setHours, 0, 23)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
@@ -156,7 +165,14 @@ export function SimpleTimer() {
                   min="0"
                   max="59"
                   value={minutes}
-                  onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || val === '-') {
+                      setMinutes(0);
+                    } else {
+                      setMinutes(parseInt(val) || 0);
+                    }
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, minutes, setMinutes, 0, 59)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
@@ -168,7 +184,14 @@ export function SimpleTimer() {
                   min="0"
                   max="59"
                   value={seconds}
-                  onChange={(e) => setSecondsInput(parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || val === '-') {
+                      setSecondsInput(0);
+                    } else {
+                      setSecondsInput(parseInt(val) || 0);
+                    }
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, seconds, setSecondsInput, 0, 59)}
                   className="w-full text-center py-3 px-2 bg-gray-100 dark:bg-gray-700 rounded-xl border-0 text-lg font-mono text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-all"
                 />
@@ -191,7 +214,14 @@ export function SimpleTimer() {
                 max="12"
                 step="0.5"
                 value={timer.targetHours}
-                onChange={(e) => timer.setTargetHours(parseFloat(e.target.value) || 4)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '' || val === '-') {
+                    timer.setTargetHours(1);
+                  } else {
+                    timer.setTargetHours(parseFloat(val) || 1);
+                  }
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'ArrowUp') {
                     e.preventDefault();
@@ -216,7 +246,14 @@ export function SimpleTimer() {
                   min="1"
                   max="60"
                   value={timer.workDuration}
-                  onChange={(e) => timer.setPomodoroSettings(parseInt(e.target.value) || 25, timer.breakDuration)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || val === '-') {
+                      timer.setPomodoroSettings(1, timer.breakDuration);
+                    } else {
+                      timer.setPomodoroSettings(parseInt(val) || 1, timer.breakDuration);
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'ArrowUp') {
                       e.preventDefault();
@@ -236,7 +273,14 @@ export function SimpleTimer() {
                   min="1"
                   max="30"
                   value={timer.breakDuration}
-                  onChange={(e) => timer.setPomodoroSettings(timer.workDuration, parseInt(e.target.value) || 5)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || val === '-') {
+                      timer.setPomodoroSettings(timer.workDuration, 1);
+                    } else {
+                      timer.setPomodoroSettings(timer.workDuration, parseInt(val) || 1);
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'ArrowUp') {
                       e.preventDefault();
