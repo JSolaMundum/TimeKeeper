@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSimpleTimer } from '@/hooks/useSimpleTimer';
 import { useTheme } from '@/components/ThemeProvider';
-import { Play, Pause, RotateCcw, Sun, Moon, Minimize2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Sun, Moon, Minimize2, Maximize2 } from 'lucide-react';
 
 export function SimpleTimer() {
   const timer = useSimpleTimer();
@@ -46,29 +46,46 @@ export function SimpleTimer() {
 
   if (isCompact) {
     return (
-      <div className="fixed top-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-50">
-        <div className="flex items-center space-x-3">
-          <div className="text-2xl font-mono font-light text-gray-900 dark:text-gray-100">
-            {timer.formatTime(timer.currentTime)}
+      <div className="fixed top-4 right-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in slide-in-from-top-2 duration-300">
+        <div className="flex items-center space-x-3 p-3">
+          <div className="flex flex-col">
+            <div className="text-lg font-mono font-bold text-gray-900 dark:text-gray-100">
+              {timer.formatTime(timer.currentTime)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {timer.mode === 'pomodoro' ? `${timer.pomodoroSession} session` : timer.mode}
+              {timer.mode === 'pomodoro' && (
+                <span className="ml-1">({timer.completedSessions + 1}/{timer.totalSessions})</span>
+              )}
+            </div>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex flex-col space-y-1">
             <button
-              className="w-6 h-6 bg-blue-500 hover:bg-blue-600 rounded text-white text-xs transition-colors flex items-center justify-center"
+              className="w-7 h-7 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-colors flex items-center justify-center"
               onClick={timer.isRunning ? timer.pause : handleStart}
+              title={timer.isRunning ? 'Pause' : 'Start'}
             >
-              {timer.isRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              {timer.isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </button>
             <button
-              className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded text-gray-700 dark:text-gray-300 text-xs hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors flex items-center justify-center"
+              className="w-7 h-7 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center"
               onClick={() => setIsCompact(false)}
+              title="Maximize"
             >
-              <Minimize2 className="w-3 h-3" />
+              <Maximize2 className="w-4 h-4" />
             </button>
           </div>
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {timer.mode === 'pomodoro' ? `${timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)} - ${timer.pomodoroSession}` : timer.mode.charAt(0).toUpperCase() + timer.mode.slice(1)}
-        </div>
+        {timer.mode === 'pomodoro' && (
+          <div className="px-3 pb-3">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div 
+                className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${(timer.completedSessions / timer.totalSessions) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
