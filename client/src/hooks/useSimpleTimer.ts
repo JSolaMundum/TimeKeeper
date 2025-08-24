@@ -105,6 +105,20 @@ export function useSimpleTimer() {
   
   const intervalRef = useRef<number | null>(null);
 
+  // Update document title with timer
+  useEffect(() => {
+    const timeDisplay = formatTime(state.currentTime);
+    const modeDisplay = state.mode === 'pomodoro' ? `${state.pomodoroSession} session` : state.mode;
+    
+    if (state.isRunning) {
+      document.title = `${timeDisplay} - ${modeDisplay} | TimeKeeper`;
+    } else if (state.currentTime > 0 || state.mode === 'stopwatch') {
+      document.title = `⏸ ${timeDisplay} - ${modeDisplay} | TimeKeeper`;
+    } else {
+      document.title = 'TimeKeeper';
+    }
+  }, [state.currentTime, state.isRunning, state.mode, state.pomodoroSession]);
+
   // Main timer effect
   useEffect(() => {
     if (!state.isRunning) {
