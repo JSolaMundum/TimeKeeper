@@ -122,9 +122,9 @@ export function useSimpleTimer() {
     const modeDisplay = state.mode === 'pomodoro' ? `${state.pomodoroSession} session` : state.mode;
     
     if (state.isRunning) {
-      document.title = `${timeDisplay} - ${modeDisplay} | TimeKeeper`;
+      document.title = `${timeDisplay} - ${modeDisplay}`;
     } else if (state.currentTime > 0 || state.mode === 'stopwatch') {
-      document.title = `⏸ ${timeDisplay} - ${modeDisplay} | TimeKeeper`;
+      document.title = `⏸ ${timeDisplay} - ${modeDisplay}`;
     } else {
       document.title = 'TimeKeeper';
     }
