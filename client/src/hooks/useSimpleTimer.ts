@@ -119,12 +119,20 @@ export function useSimpleTimer() {
   // Update document title with timer
   useEffect(() => {
     const timeDisplay = formatTime(state.currentTime);
-    const modeDisplay = state.mode === 'pomodoro' ? `${state.pomodoroSession} session` : state.mode;
+    let titleDisplay = '';
+    
+    if (state.mode === 'pomodoro') {
+      titleDisplay = `${timeDisplay} - ${state.pomodoroSession} session`;
+    } else if (state.mode === 'stopwatch') {
+      titleDisplay = `⏱ ${timeDisplay} - stopwatch`;
+    } else {
+      titleDisplay = `${timeDisplay} - timer`;
+    }
     
     if (state.isRunning) {
-      document.title = `${timeDisplay} - ${modeDisplay}`;
+      document.title = titleDisplay;
     } else if (state.currentTime > 0 || state.mode === 'stopwatch') {
-      document.title = `⏸ ${timeDisplay} - ${modeDisplay}`;
+      document.title = `⏸ ${titleDisplay}`;
     } else {
       document.title = 'TimeKeeper';
     }
