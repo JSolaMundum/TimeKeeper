@@ -1,5 +1,73 @@
 import { useState, useEffect, useRef } from 'react';
 
+// Notification sound options
+export type SoundOption = 'chime' | 'bell' | 'gentle';
+
+const playNotificationSound = (sound: SoundOption = 'chime') => {
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  // Different sound profiles for macOS-style notifications
+  const soundProfiles = {
+    chime: { frequency: 800, duration: 0.4, volume: 0.3 },
+    bell: { frequency: 1000, duration: 0.6, volume: 0.4 },
+    gentle: { frequency: 400, duration: 0.5, volume: 0.2 }
+  };
+
+  const profile = soundProfiles[sound];
+  
+  oscillator.frequency.setValueAtTime(profile.frequency, audioContext.currentTime);
+  oscillator.type = 'sine';
+  
+  gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+  gainNode.gain.linearRampToValueAtTime(profile.volume, audioContext.currentTime + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + profile.duration);
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + profile.duration);
+};
+
+const showTimerNotification = (type: 'work' | 'break' | 'complete' | 'timer', sessionInfo?: string, sound: SoundOption = 'chime') => {
+  const notifications = {
+    work: {
+      title: '🍅 Work Session Complete!',
+      body: 'Time for a break. Great job on your focused work!',
+    },
+    break: {
+      title: '⏰ Break Time Over!',
+      body: 'Ready to get back to work? Your next session is waiting.',
+    },
+    complete: {
+      title: '🎉 All Sessions Complete!',
+      body: sessionInfo || 'Congratulations! You\'ve completed your productivity goal.',
+    },
+    timer: {
+      title: '⏰ Timer Complete!',
+      body: 'Your timer has finished!',
+    }
+  };
+
+  const config = notifications[type];
+  
+  // Play sound first
+  playNotificationSound(sound);
+  
+  // Show notification if permission granted
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(config.title, {
+      body: config.body,
+      icon: '/favicon.ico',
+      badge: '/favicon.ico',
+      tag: 'timer-notification',
+      requireInteraction: false
+    });
+  }
+};
+
 export interface TimerState {
   mode: 'timer' | 'stopwatch' | 'pomodoro';
   isRunning: boolean;
@@ -12,6 +80,10 @@ export interface TimerState {
   completedSessions: number;
   targetHours: number; // target work hours
   totalSessions: number; // calculated total sessions needed
+  // Notification settings
+  notificationsEnabled: boolean;
+  soundEnabled: boolean;
+  selectedSound: SoundOption;
 }
 
 export function useSimpleTimer() {
@@ -25,7 +97,10 @@ export function useSimpleTimer() {
     breakDuration: 5,
     completedSessions: 0,
     targetHours: 1,
-    totalSessions: 3 // 1 hour = 60 min, 60/25 = 2.4, rounded up to 3 sessions (work+break cycles)
+    totalSessions: 3, // 1 hour = 60 min, 60/25 = 2.4, rounded up to 3 sessions (work+break cycles)
+    notificationsEnabled: true,
+    soundEnabled: true,
+    selectedSound: 'chime'
   });
   
   const intervalRef = useRef<number | null>(null);
@@ -74,6 +149,15 @@ export function useSimpleTimer() {
               const nextDuration = nextSession === 'work' ? prev.workDuration : prev.breakDuration;
               const newCompletedSessions = prev.pomodoroSession === 'break' ? prev.completedSessions + 1 : prev.completedSessions; // Complete session after break
               
+              // Show notification for session completion
+              if (prev.notificationsEnabled) {
+                if (newCompletedSessions >= prev.totalSessions) {
+                  showTimerNotification('complete', `You completed ${prev.targetHours} hours of focused work!`, prev.selectedSound);
+                } else {
+                  showTimerNotification(prev.pomodoroSession, undefined, prev.selectedSound);
+                }
+              }
+              
               return {
                 ...prev,
                 pomodoroSession: nextSession,
@@ -82,6 +166,10 @@ export function useSimpleTimer() {
                 completedSessions: newCompletedSessions,
                 isRunning: false
               };
+            }
+            // Timer mode completion
+            if (prev.notificationsEnabled) {
+              showTimerNotification('timer', undefined, prev.selectedSound);
             }
             return { ...prev, currentTime: 0, isRunning: false };
           }
@@ -190,6 +278,26 @@ export function useSimpleTimer() {
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const setNotificationSettings = (enabled: boolean, sound?: SoundOption) => {
+    setState(prev => ({
+      ...prev,
+      notificationsEnabled: enabled,
+      soundEnabled: enabled,
+      selectedSound: sound || prev.selectedSound
+    }));
+    
+    // Request permission when enabling notifications
+    if (enabled && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  };
+
+  const testNotification = () => {
+    if (state.notificationsEnabled) {
+      showTimerNotification('timer', 'This is a test notification', state.selectedSound);
+    }
+  };
+
   return {
     ...state,
     setTimer,
@@ -199,6 +307,8 @@ export function useSimpleTimer() {
     setMode,
     setPomodoroSettings,
     setTargetHours,
+    setNotificationSettings,
+    testNotification,
     formatTime
   };
 }

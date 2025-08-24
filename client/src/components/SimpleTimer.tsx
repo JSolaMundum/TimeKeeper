@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSimpleTimer } from '@/hooks/useSimpleTimer';
 import { useTheme } from '@/components/ThemeProvider';
-import { Play, Pause, RotateCcw, Sun, Moon, Minimize2, Maximize2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Sun, Moon, Minimize2, Maximize2, Bell, Volume2, VolumeX } from 'lucide-react';
 
 export function SimpleTimer() {
   const timer = useSimpleTimer();
@@ -343,6 +343,62 @@ export function SimpleTimer() {
             </div>
           </div>
         )}
+
+        {/* Notification Settings */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Notifications</h3>
+          
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-4">
+            {/* Enable Notifications */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Bell className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Notifications</span>
+              </div>
+              <button
+                onClick={() => timer.setNotificationSettings(!timer.notificationsEnabled, timer.selectedSound)}
+                className={`w-10 h-6 rounded-full transition-colors ${
+                  timer.notificationsEnabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+              >
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                  timer.notificationsEnabled ? 'translate-x-5' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+
+            {/* Sound Selection */}
+            {timer.notificationsEnabled && (
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Volume2 className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notification Sound</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['chime', 'bell', 'gentle'] as const).map((sound) => (
+                    <button
+                      key={sound}
+                      onClick={() => timer.setNotificationSettings(true, sound)}
+                      className={`py-2 px-3 text-xs rounded-lg transition-colors ${
+                        timer.selectedSound === sound
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
+                      }`}
+                    >
+                      {sound.charAt(0).toUpperCase() + sound.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={timer.testNotification}
+                  className="w-full py-2 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                >
+                  Test Notification
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Controls */}
         <div className="mb-6">
