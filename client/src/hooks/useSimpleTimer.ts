@@ -122,11 +122,12 @@ export function useSimpleTimer() {
     let titleDisplay = '';
     
     if (state.mode === 'pomodoro') {
-      titleDisplay = `${timeDisplay} - ${state.pomodoroSession} session`;
+      const sessionEmoji = state.pomodoroSession === 'work' ? '🍅' : '☕';
+      titleDisplay = `${sessionEmoji} ${timeDisplay}`;
     } else if (state.mode === 'stopwatch') {
-      titleDisplay = `⏱ ${timeDisplay} - stopwatch`;
+      titleDisplay = `⏱ ${timeDisplay}`;
     } else {
-      titleDisplay = `${timeDisplay} - timer`;
+      titleDisplay = `⏰ ${timeDisplay}`;
     }
     
     if (state.isRunning) {
